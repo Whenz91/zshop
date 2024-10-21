@@ -16,15 +16,4 @@ class EditOrder extends EditRecord
             Actions\DeleteAction::make(),
         ];
     }
-
-    protected function mutateFormDataBeforeFill(array $data): array
-    {
-        $data['billing_country'] = $data['billing_address']['billing_country'];
-        $data['billing_county'] = $data['billing_address']['billing_county'];
-        $data['billing_zipcode'] = $data['billing_address']['billing_zipcode'];
-        $data['billing_city'] = $data['billing_address']['billing_city'];
-        $data['billing_street'] = $data['billing_address']['billing_street'];
-    
-        return $data;
-    }
 }

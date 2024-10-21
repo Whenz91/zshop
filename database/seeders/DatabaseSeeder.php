@@ -26,5 +26,14 @@ class DatabaseSeeder extends Seeder
             'email' => 'mzuty91@gmail.com',
             'password' => Hash::make('kiazaki91es'),
         ]);
+
+        DB::table('paymenth_methods')->insert([
+            'payment_type' => 'Utánvét'
+        ]);
+
+        DB::table('shipping_methods')->insert([
+            'shipping_type' => 'GLS futár',
+            'cost' => 1990
+        ]);
     }
 }

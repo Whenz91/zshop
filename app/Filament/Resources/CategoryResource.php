@@ -19,6 +19,9 @@ class CategoryResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-numbered-list';
 
+    protected static ?string $navigationGroup = 'Shop';
+    protected static ?int $navigationSort = 1;
+
     public static function form(Form $form): Form
     {
         return $form
@@ -48,7 +51,12 @@ class CategoryResource extends Resource
                 Tables\Columns\TextColumn::make('title')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('products_count')
-                    ->counts('products')
+                    ->counts('products'),
+                Tables\Columns\IconColumn::make('is_active')
+                    ->icon(fn (string $state): string => match ($state) {
+                        '1' => 'heroicon-o-check-circle',
+                        '0' => 'heroicon-o-x-circle'
+                    })
             ])
             ->filters([
                 //

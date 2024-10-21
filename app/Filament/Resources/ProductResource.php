@@ -21,6 +21,9 @@ class ProductResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
 
+    protected static ?string $navigationGroup = 'Shop';
+    protected static ?int $navigationSort = 2;
+
     public static function form(Form $form): Form
     {
         return $form
@@ -83,6 +86,11 @@ class ProductResource extends Resource
                     ->money('HUF', locale: 'hu'),
                 Tables\Columns\TextColumn::make('quantity')
                     ->sortable(),
+                Tables\Columns\IconColumn::make('is_active')
+                    ->icon(fn (string $state): string => match ($state) {
+                        '1' => 'heroicon-o-check-circle',
+                        '0' => 'heroicon-o-x-circle'
+                    })
             ])
             ->filters([
                 //

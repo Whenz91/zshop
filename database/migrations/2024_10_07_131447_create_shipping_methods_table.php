@@ -14,7 +14,8 @@ return new class extends Migration
         Schema::create('shipping_methods', function (Blueprint $table) {
             $table->id();
             $table->string('shipping_type');
-            $table->integer('cost');
+            $table->decimal('cost', 10, 2)->default(0);
+            $table->boolean('is_active')->default(true);
             $table->timestamps();
         });
     }

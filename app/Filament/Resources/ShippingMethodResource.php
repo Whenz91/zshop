@@ -19,6 +19,8 @@ class ShippingMethodResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-truck';
 
+    protected static ?string $navigationGroup = 'Settings';
+
     public static function form(Form $form): Form
     {
         return $form
@@ -31,6 +33,9 @@ class ShippingMethodResource extends Resource
                     ->numeric()
                     ->default(0)
                     ->prefix('Ft'),
+                Forms\Components\Toggle::make('is_active')
+                    ->default(true)
+                    ->columnSpan(2),
             ]);
     }
 
@@ -41,6 +46,11 @@ class ShippingMethodResource extends Resource
                 Tables\Columns\TextColumn::make('shipping_type'),
                 Tables\Columns\TextColumn::make('cost')
                     ->money('HUF', locale: 'hu'),
+                Tables\Columns\IconColumn::make('is_active')
+                    ->icon(fn (string $state): string => match ($state) {
+                        '1' => 'heroicon-o-check-circle',
+                        '0' => 'heroicon-o-x-circle'
+                    })
             ])
             ->filters([
                 //

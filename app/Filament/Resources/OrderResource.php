@@ -26,6 +26,15 @@ class OrderResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-shopping-bag';
 
+    protected static ?string $navigationGroup = 'Shop';
+    protected static ?int $navigationSort = 3;
+
+    public static function getNavigationBadge(): ?string
+    {
+        //return static::getModel()::count();
+        return Order::query()->where('status', '=', 'new')->count();
+    }
+
     public static function form(Form $form): Form
     {
         return $form
@@ -47,7 +56,7 @@ class OrderResource extends Resource
                             ->required()
                             ->maxLength(255)
                             ->default('Magyarország'),
-                        Forms\Components\Select::make('billing_county')
+                        Forms\Components\Select::make('billing_state')
                             ->required()
                             ->options([
                                 'bacs' => 'Bács-Kiskun',
@@ -86,7 +95,7 @@ class OrderResource extends Resource
                         Forms\Components\TextInput::make('shipping_country')
                             ->maxLength(255)
                             ->default('Magyarország'),
-                        Forms\Components\Select::make('shipping_county')
+                        Forms\Components\Select::make('shipping_state')
                             ->options([
                                 'bacs' => 'Bács-Kiskun',
                                 'baranya' => 'Baranya',
@@ -117,9 +126,27 @@ class OrderResource extends Resource
                             ->columnSpan(2),
                     ]),
                     Forms\Components\Select::make('payment_method')
-                        ->options(PaymenthMethod::all()->pluck('payment_type', 'id')),
+                        ->options(PaymenthMethod::all()->pluck('payment_type', 'payment_type')),
                     Forms\Components\Select::make('shipping_method')
-                        ->options(ShippingMethod::all()->pluck('shipping_type', 'id')),
+                        ->options(ShippingMethod::all()->pluck('shipping_type', 'shipping_type')),
+                    Forms\Components\ToggleButtons::make('status')
+                        ->options([
+                            'new' => 'New',
+                            'processing' => 'Processing',
+                            'shipped' => 'Shipped',
+                            'delivered' => 'Delivered',
+                            'canceled' => 'Canceled'
+                        ])
+                        ->colors([
+                            'new' => 'warning',
+                            'processing' => 'info',
+                            'shipped' => 'info',
+                            'delivered' => 'success',
+                            'canceled' => 'danger',
+                        ])
+                        ->inline()
+                        ->columnSpan(2)
+                        ->default('new'),
                     Forms\Components\Section::make('Cart')
                         ->schema([
                             Forms\Components\Repeater::make('orderItems')
@@ -174,7 +201,9 @@ class OrderResource extends Resource
                                     }),
                                 Forms\Components\Hidden::make('grand_total')
                                     ->default(0)
-                            ])
+                            ]),
+                    Forms\Components\Textarea::make('notes')
+                            ->columnSpan(2)
             ]);
     }
 
@@ -182,7 +211,36 @@ class OrderResource extends Resource
     {
         return $table
             ->columns([
-                //
+                Tables\Columns\TextColumn::make('customer_name')
+                    ->sortable()
+                    ->searchable(),
+
+                Tables\Columns\TextColumn::make('grand_total')
+                    ->sortable()
+                    ->numeric()
+                    ->money('HUF', 0, 'HUN'),
+
+                Tables\Columns\TextColumn::make('payment_method')
+                    ->sortable(),
+
+                Tables\Columns\TextColumn::make('shipping_method')
+                    ->sortable(),
+
+                Tables\Columns\SelectColumn::make('status')
+                    ->options([
+                        'new' => 'New',
+                        'processing' => 'Processing',
+                        'shipped' => 'Shipped',
+                        'delivered' => 'Delivered',
+                        'canceled' => 'Canceled'
+                    ])
+                    ->sortable()
+                    ->searchable(),
+                
+                Tables\Columns\TextColumn::make('created_at')
+                    ->dateTime('Y-m-d H:i:s')
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true)
             ])
             ->filters([
                 //

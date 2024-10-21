@@ -19,6 +19,8 @@ class PaymenthMethodResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-banknotes';
 
+    protected static ?string $navigationGroup = 'Settings';
+
     public static function form(Form $form): Form
     {
         return $form
@@ -32,7 +34,10 @@ class PaymenthMethodResource extends Resource
                     ->default(0)
                     ->prefix('Ft'),
                 Forms\Components\TextInput::make('provider')
-                    ->maxLength(255)
+                    ->maxLength(255),
+                Forms\Components\Toggle::make('is_active')
+                    ->default(true)
+                    ->columnSpan(2),
             ]);
     }
 
@@ -43,7 +48,12 @@ class PaymenthMethodResource extends Resource
                 Tables\Columns\TextColumn::make('payment_type'),
                 Tables\Columns\TextColumn::make('cost')
                     ->money('HUF', locale: 'hu'),
-                Tables\Columns\TextColumn::make('provider')
+                Tables\Columns\TextColumn::make('provider'),
+                Tables\Columns\IconColumn::make('is_active')
+                    ->icon(fn (string $state): string => match ($state) {
+                        '1' => 'heroicon-o-check-circle',
+                        '0' => 'heroicon-o-x-circle'
+                    })
             ])
             ->filters([
                 //
