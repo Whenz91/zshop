@@ -24,6 +24,22 @@ class ProductResource extends Resource
     protected static ?string $navigationGroup = 'Shop';
     protected static ?int $navigationSort = 2;
 
+    protected static ?string $recordTitleAttribute = 'name';
+
+    public static function getGloballySearchableAttributes(): array
+    {
+        return ['name', 'categories.title'];
+    }
+
+    /*
+    public static function getGlobalSearchResultDetails(Model $record): array
+    {
+        return [
+            'Category' => $record->category->title,
+        ];
+    }
+    */
+
     public static function form(Form $form): Form
     {
         return $form
