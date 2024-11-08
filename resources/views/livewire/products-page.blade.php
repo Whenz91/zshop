@@ -24,6 +24,22 @@
     <!-- End Accordion -->
 
     <div class="pb-4 px-5 grid grid-cols-2">
+        @foreach($filter_groups as $group)
+            <!--Start Col -->
+            <fieldset wire:key="$group->id">
+                <legend>{{ $group->name }}</legend>
+                @foreach($group->options as $option)
+                    <div class="flex" wire:key="{{ $option->id }}">
+                        <input type="checkbox" class="shrink-0 mt-0.5 border-gray-200 rounded text-blue-600 focus:ring-blue-500 disabled:opacity-50 disabled:pointer-events-none dark:bg-neutral-800 dark:border-neutral-700 dark:checked:bg-blue-500 dark:checked:border-blue-500  dark:focus:ring-offset-gray-800" value="{{ $option->id }}" id="{{ $option->value }}" wire:model.live="selected_size">
+                        <label for="{{ $option->value }}" class="text-sm text-gray-500 ms-3 dark:text-neutral-400">{{ $option->name }}</label>
+                    </div>
+                @endforeach
+            </fieldset>
+            <!--End Col -->
+        @endforeach
+    </div>
+
+    <div class="pb-4 px-5 grid grid-cols-2">
         <!--Start Col -->
         <fieldset>
             <legend>Kategóriák</legend>
@@ -56,26 +72,6 @@
             </div>
         </fieldset>
         <!--End Col -->
-
-        <!--Start Col -->
-        <fieldset>
-            <legend>Árak</legend>
-            
-            <div class="flex">
-                <input type="checkbox" class="shrink-0 mt-0.5 border-gray-200 rounded text-blue-600 focus:ring-blue-500 disabled:opacity-50 disabled:pointer-events-none dark:bg-neutral-800 dark:border-neutral-700 dark:checked:bg-blue-500 dark:checked:border-blue-500  dark:focus:ring-offset-gray-800" id="hs-default-checkbox">
-                <label for="hs-default-checkbox" class="text-sm text-gray-500 ms-3 dark:text-neutral-400">$</label>
-            </div>
-            <div class="flex">
-                <input type="checkbox" class="shrink-0 mt-0.5 border-gray-200 rounded text-blue-600 focus:ring-blue-500 disabled:opacity-50 disabled:pointer-events-none dark:bg-neutral-800 dark:border-neutral-700 dark:checked:bg-blue-500 dark:checked:border-blue-500  dark:focus:ring-offset-gray-800" id="hs-default-checkbox">
-                <label for="hs-default-checkbox" class="text-sm text-gray-500 ms-3 dark:text-neutral-400">$$</label>
-            </div>
-            <div class="flex">
-                <input type="checkbox" class="shrink-0 mt-0.5 border-gray-200 rounded text-blue-600 focus:ring-blue-500 disabled:opacity-50 disabled:pointer-events-none dark:bg-neutral-800 dark:border-neutral-700 dark:checked:bg-blue-500 dark:checked:border-blue-500  dark:focus:ring-offset-gray-800" id="hs-default-checkbox">
-                <label for="hs-default-checkbox" class="text-sm text-gray-500 ms-3 dark:text-neutral-400">$$$</label>
-            </div>
-        </fieldset>
-        <!--End Col -->
-
     </div>
 
     <!-- Start Grid -->

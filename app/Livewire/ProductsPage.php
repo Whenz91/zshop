@@ -4,6 +4,7 @@ namespace App\Livewire;
 
 use App\Models\Product;
 use App\Models\Category;
+use App\Models\FilterGroup;
 use Livewire\Attributes\Url;
 use Livewire\WithPagination;
 use Livewire\Attributes\Title;
@@ -18,6 +19,8 @@ class ProductsPage extends Component
     public $slug;
     #[Url]
     public $stock_info = '';
+    #[Url]
+    public $selected_size = [];
 
     public function mount($slug)
     {
@@ -33,6 +36,19 @@ class ProductsPage extends Component
             'categories', 'slug', '=', $this->slug
         )->where('is_active', 1);
 
+        
+        if(!empty($this->selected_size)) {
+            $productsQuery->whereRelation(
+                'filters', 'filter_options_id', 'IN', '1,2'
+            );
+        }
+
+        /*
+        if(!empty($this->selected_size)) {
+            $productsQuery->get()->load(['filters']);
+            $productsQuery->whereIn('filters.filter_options_id', $this->selected_size);
+        }
+            */
 
         if(!empty($this->stock_info)) {
             if($this->stock_info == "in_stock") {
@@ -47,7 +63,8 @@ class ProductsPage extends Component
 
         return view('livewire.products-page', [
             'products' => $productsQuery->paginate(10),
-            'categories' => Category::where('is_active', 1)->get(['id', 'title', 'slug'])
+            'categories' => Category::where('is_active', 1)->get(['id', 'title', 'slug']),
+            'filter_groups' => FilterGroup::where('is_active', 1)->with('options')->get(),
         ]);
     }
 }

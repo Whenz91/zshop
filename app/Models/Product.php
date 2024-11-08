@@ -15,6 +15,11 @@ class Product extends Model
         return $this->belongsToMany(Category::class);
     }
 
+    public function filters(): BelongsToMany
+    {
+        return $this->belongsToMany(FilterOptions::class);
+    }
+
     protected $casts = [
         'images' => 'array',
         'is_active' => 'boolean',

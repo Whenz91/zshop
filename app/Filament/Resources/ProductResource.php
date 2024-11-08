@@ -80,6 +80,12 @@ class ProductResource extends Resource
                             ->maxLength(255)
                     ])
                     ->required(),
+                Forms\Components\Select::make('filter_option_id')
+                    ->relationship('filters', 'name')
+                    ->multiple()
+                    ->searchable()
+                    ->preload()
+                    ->required(),
                 Forms\Components\Toggle::make('is_active')
                     ->default(true)
                     ->columnSpan(2),
