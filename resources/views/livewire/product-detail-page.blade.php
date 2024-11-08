@@ -2,11 +2,15 @@
    <div class="grid grid-cols-3 gap-4">
 <!-- Image -->
       <div class="border-solid border-gray-300 border rounded p-3">
-         <img src="https://images.unsplash.com/photo-1680868543815-b8666dba60f7?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1200&q=80" alt="...">
+         @if($product->images)
+         <img src="{{ url('storage', $product->images[0]) }}" alt="{{ $product->name }}">      
+         @else
+         <img src="https://images.unsplash.com/photo-1680868543815-b8666dba60f7?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1200&q=80" alt="{{ $product->name }}">
+         @endif
       </div>
 <!-- Product Inofs -->
       <div class="col-span-2">
-         <h1 class="text-4xl dark:text-white mb-2">Prehisztorik florárium</h1>
+         <h1 class="text-4xl dark:text-white mb-2">{{ $product->name }}</h1>
          <p class="mb-6"><a href="#" class="text-gray-500 underline">Floráriumok</a></p>
 
          <p class="mb-2">Méret:</p>
@@ -45,7 +49,7 @@
             </li>
          </ul>
 
-         <p class="mt-5 mb-6 text-xl">Ár: <span class="font-bold">15000 Ft</span></p>
+         <p class="mt-5 mb-6 text-xl">Ár: <span class="font-bold">{{ Number::currency($product->price , in: 'HUF', locale: 'hu') }}</span></p>
 
          <button type="button" class="py-3 px-4 inline-flex items-center gap-x-2 text-sm font-medium rounded-lg border border-transparent bg-blue-600 text-white hover:bg-blue-700 focus:outline-none focus:bg-blue-700 disabled:opacity-50 disabled:pointer-events-none">
             Kosárba
@@ -77,9 +81,9 @@
                   Leírás
                </button>
                <div id="hs-basic-collapse-one" class="hs-accordion-content w-full overflow-hidden transition-[height] duration-300" role="region" aria-labelledby="hs-basic-heading-one">
-                  <p class="text-gray-800 dark:text-neutral-200">
-                  <em>This is the third item's accordion body.</em> It is hidden by default, until the collapse plugin adds the appropriate classes that we use to style each element. These classes control the overall appearance, as well as the showing and hiding via CSS transitions.
-                  </p>
+                  <div class="text-gray-800 dark:text-neutral-200">
+                     {!! $product->description !!}
+                  </div>
                </div>
             </div>
             <!-- Accordion Item End -->

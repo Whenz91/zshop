@@ -33,6 +33,9 @@ class CategoryResource extends Resource
                     ->label('SEO URL')
                     ->required()
                     ->maxLength(255),
+                Forms\Components\FileUpload::make('image')
+                    ->directory('categories')
+                    ->columnSpan(2),
                 Forms\Components\RichEditor::make('description')
                     ->columnSpan(2),
                 Forms\Components\Toggle::make('is_active')

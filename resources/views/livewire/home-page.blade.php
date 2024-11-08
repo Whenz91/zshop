@@ -101,30 +101,18 @@
     
         <!-- Start Grid -->
         <div class="grid grid-cols-4 gap-4">
+            @foreach($categories as $category)
             <!-- Start Col -->
-             <div>
-                <img src="https://plus.unsplash.com/premium_photo-1663962158789-0ab624c4f17d?q=80&w=700&h=800&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" alt="" class="w-full rounded-md">
-                <h3 class="text-xl font-bold text-gray-800 sm:text-2xl lg:text-3xl lg:leading-tight dark:text-white mt-6 text-center">Zöld falak</h3>
+             <div wire:key="{{ $category->id }}">
+                @if($category->image)
+                <img src="{{ url('storage', $category->image) }}" alt="{{ $category->title }}" class="w-full rounded-md">
+                @else
+                <img src="https://plus.unsplash.com/premium_photo-1663962158789-0ab624c4f17d?q=80&w=700&h=800&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" alt="{{ $category->title }}" class="w-full rounded-md">
+                @endif
+                <h3 class="text-xl font-bold text-gray-800 sm:text-2xl lg:text-3xl lg:leading-tight dark:text-white mt-6 text-center">{{ $category->title }}</h3>
              </div>
             <!-- End Col -->
-            <!-- Start Col -->
-             <div>
-                <img src="https://images.unsplash.com/photo-1455793222120-98f37a8d4ede?q=80&w=700&h=800&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" alt="" class="w-full rounded-md">
-                <h3 class="text-xl font-bold text-gray-800 sm:text-2xl lg:text-3xl lg:leading-tight dark:text-white mt-6 text-center">Növényes kávézó asztalok</h3>
-             </div>
-            <!-- End Col -->
-            <!-- Start Col -->
-             <div>
-                <img src="https://images.unsplash.com/photo-1535882832-ac75c142f79f?q=80&w=700&h=800&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" alt="" class="w-full rounded-md">
-                <h3 class="text-xl font-bold text-gray-800 sm:text-2xl lg:text-3xl lg:leading-tight dark:text-white mt-6 text-center">Floráriumok</h3>
-             </div>
-            <!-- End Col -->
-            <!-- Start Col -->
-             <div>
-                <img src="https://images.unsplash.com/photo-1528604891270-c2d9c3d1fc0b?q=80&w=700&h=800&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" alt="" class="w-full rounded-md">
-                <h3 class="text-xl font-bold text-gray-800 sm:text-2xl lg:text-3xl lg:leading-tight dark:text-white mt-6 text-center">Moha-képek</h3>
-             </div>
-            <!-- End Col -->
+            @endforeach
         </div>
         <!-- End Grid -->
      </section>
