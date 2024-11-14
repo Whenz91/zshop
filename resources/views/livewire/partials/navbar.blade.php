@@ -18,7 +18,10 @@
         <a class="font-medium {{ request()->routeIs('categories') ? 'text-blue-500' : 'text-gray-600' }} hover:text-gray-400 focus:outline-none focus:text-gray-400 dark:text-neutral-400 dark:hover:text-neutral-500 dark:focus:text-neutral-500" href="{{ route('categories') }}">Kategóriák</a>
         <a class="font-medium {{ request()->routeIs('blog') ? 'text-blue-500' : 'text-gray-600' }} hover:text-gray-400 focus:outline-none focus:text-gray-400 dark:text-neutral-400 dark:hover:text-neutral-500 dark:focus:text-neutral-500" href="#">Blog</a>
         <a class="font-medium {{ request()->routeIs('register') ? 'text-blue-500' : 'text-gray-600' }} hover:text-gray-400 focus:outline-none focus:text-gray-400 dark:text-neutral-400 dark:hover:text-neutral-500 dark:focus:text-neutral-500" href="{{ route('register') }}">Regisztráció</a>
-        <a class="font-medium {{ request()->routeIs('cart') ? 'text-blue-500' : 'text-gray-600' }} hover:text-gray-400 focus:outline-none focus:text-gray-400 dark:text-neutral-400 dark:hover:text-neutral-500 dark:focus:text-neutral-500" href="{{ route('cart') }}">Kosár</a>
+        <a class="font-medium {{ request()->routeIs('cart') ? 'text-blue-500' : 'text-gray-600' }} hover:text-gray-400 focus:outline-none focus:text-gray-400 dark:text-neutral-400 dark:hover:text-neutral-500 dark:focus:text-neutral-500" href="{{ route('cart') }}">
+          Kosár
+          <span class="inline-flex items-center py-0.5 px-1.5 rounded-full text-xs font-medium bg-green-700 text-white">{{ $total_count }}</span>
+        </a>
       </div>
     </div>
   </nav>

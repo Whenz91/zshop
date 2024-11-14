@@ -70,6 +70,7 @@
             </div>
         </footer>
         @endif
+        @livewire('toast-notification')
         @livewireScripts
     </body>
 </html>

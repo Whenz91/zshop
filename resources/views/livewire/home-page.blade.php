@@ -103,14 +103,14 @@
         <div class="grid grid-cols-4 gap-4">
             @foreach($categories as $category)
             <!-- Start Col -->
-             <div wire:key="{{ $category->id }}">
+             <a href="{{ route('products', ['slug' => $category->slug]) }}" wire:key="{{ $category->id }}">
                 @if($category->image)
                 <img src="{{ url('storage', $category->image) }}" alt="{{ $category->title }}" class="w-full rounded-md">
                 @else
                 <img src="https://plus.unsplash.com/premium_photo-1663962158789-0ab624c4f17d?q=80&w=700&h=800&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" alt="{{ $category->title }}" class="w-full rounded-md">
                 @endif
                 <h3 class="text-xl font-bold text-gray-800 sm:text-2xl lg:text-3xl lg:leading-tight dark:text-white mt-6 text-center">{{ $category->title }}</h3>
-             </div>
+             </a>
             <!-- End Col -->
             @endforeach
         </div>

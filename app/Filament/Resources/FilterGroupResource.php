@@ -4,9 +4,11 @@ namespace App\Filament\Resources;
 
 use Filament\Forms;
 use Filament\Tables;
+use Filament\Forms\Set;
 use Filament\Forms\Form;
 use Filament\Tables\Table;
 use App\Models\FilterGroup;
+use Illuminate\Support\Str;
 use Filament\Resources\Resource;
 use Filament\Forms\Components\Toggle;
 use Filament\Forms\Components\TextInput;
@@ -29,7 +31,13 @@ class FilterGroupResource extends Resource
         return $form
             ->schema([
                 Forms\Components\TextInput::make('name')
-                    ->required(),
+                    ->required()
+                    ->live(onBlur: true)
+                    ->afterStateUpdated(fn (Set $set, ?string $state) => $set('slug', Str::slug($state))),
+                Forms\Components\TextInput::make('slug')
+                    ->required()
+                    ->disabled()
+                    ->dehydrated(),
                 Forms\Components\TextInput::make('order')
                     ->required()
                     ->numeric()
