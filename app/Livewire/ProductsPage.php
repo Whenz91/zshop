@@ -77,8 +77,8 @@ class ProductsPage extends Component
        if($this->sort == 'price_desc') {
             $productsQuery->orderBy('price', 'DESC');
        }
-
-        return view('livewire.products-page', [
+       
+       return view('livewire.products-page', [
             'products' => $productsQuery->paginate(10),
             'filter_groups' => FilterGroup::where('is_active', 1)->with('options')->get(),
         ]);
