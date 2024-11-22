@@ -156,4 +156,20 @@ class CartManagement {
     static public function calculateGrandTotal($items) {
         return array_sum(array_column($items, 'total_amount'));
     }
+
+    /**
+     * Return calculated grand, net totals and tax
+     */
+    static public function calculateTotalSummary($items) {
+        $grand_total = array_sum(array_column($items, 'total_amount'));
+        $vat = 1.27;
+        $net_total = $grand_total / $vat;
+
+        return [
+            'grand_total' => $grand_total,
+            'net_total' => $net_total,
+            'tax' => $grand_total - $net_total
+        ];
+    }
+
 }
