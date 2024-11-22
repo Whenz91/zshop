@@ -25,7 +25,7 @@
                 <div class="py-3 flex items-center text-xs text-gray-400 uppercase before:flex-1 before:border-t before:border-gray-200 before:me-6 after:flex-1 after:border-t after:border-gray-200 after:ms-6 dark:text-neutral-500 dark:before:border-neutral-600 dark:after:border-neutral-600">Vagy</div>
 
                 <!-- Form -->
-                <form wire:submit.prevent="">
+                <form wire:submit.prevent="save">
                     <div class="grid gap-y-4">
                         <!-- Form Group -->
                         <div>
@@ -33,7 +33,9 @@
                             <div class="relative">
                                 <input type="text" id="name" wire:model="name" class="py-3 px-4 block w-full border border-gray-200 rounded-lg text-sm focus:border-blue-500 focus:ring-blue-500 disabled:opacity-50 disabled:pointer-events-none dark:bg-neutral-900 dark:border-neutral-700 dark:text-neutral-400 dark:placeholder-neutral-500 dark:focus:ring-neutral-600" aria-describedby="name-error">
                             </div>
-                            <p class="hidden text-xs text-red-600 mt-2" id="email-error">Please include a valid email address so we can get back to you</p>
+                            @error('name')
+                                <p class="text-xs text-red-600 mt-2" id="name-error">{{ $message }}</p>
+                            @enderror
                         </div>
                         <!-- End Form Group -->
 
@@ -43,7 +45,9 @@
                             <div class="relative">
                                 <input type="email" id="email" wire:model="email" class="py-3 px-4 block w-full border border-gray-200 rounded-lg text-sm focus:border-blue-500 focus:ring-blue-500 disabled:opacity-50 disabled:pointer-events-none dark:bg-neutral-900 dark:border-neutral-700 dark:text-neutral-400 dark:placeholder-neutral-500 dark:focus:ring-neutral-600" aria-describedby="email-error">
                             </div>
-                            <p class="hidden text-xs text-red-600 mt-2" id="email-error">Please include a valid email address so we can get back to you</p>
+                            @error('email')
+                                <p class="text-xs text-red-600 mt-2" id="email-error">{{ $message }}</p>
+                            @enderror
                         </div>
                         <!-- End Form Group -->
 
@@ -53,7 +57,9 @@
                             <div class="relative">
                                 <input type="password" id="password" wire:model="password" class="py-3 px-4 block w-full border border-gray-200 rounded-lg text-sm focus:border-blue-500 focus:ring-blue-500 disabled:opacity-50 disabled:pointer-events-none dark:bg-neutral-900 dark:border-neutral-700 dark:text-neutral-400 dark:placeholder-neutral-500 dark:focus:ring-neutral-600" aria-describedby="password-error">
                             </div>
-                            <p class="hidden text-xs text-red-600 mt-2" id="password-error">8+ characters required</p>
+                            @error('password')
+                                <p class="text-xs text-red-600 mt-2" id="password-error">{{ $message }}</p>
+                            @enderror
                         </div>
                         <!-- End Form Group -->
 
@@ -63,18 +69,23 @@
                             <div class="relative">
                                 <input type="password" id="password_confirmation" wire:model="password_confirmation" class="py-3 px-4 block w-full border border-gray-200 rounded-lg text-sm focus:border-blue-500 focus:ring-blue-500 disabled:opacity-50 disabled:pointer-events-none dark:bg-neutral-900 dark:border-neutral-700 dark:text-neutral-400 dark:placeholder-neutral-500 dark:focus:ring-neutral-600" aria-describedby="password_confirmation-error">
                             </div>
-                            <p class="hidden text-xs text-red-600 mt-2" id="password_confirmation-error">Password does not match the password</p>
+                            @error('password_confirmation')
+                                <p class="text-xs text-red-600 mt-2" id="password_confirmation-error">{{ $message }}</p>
+                            @enderror
                         </div>
                         <!-- End Form Group -->
 
                         <!-- Checkbox -->
-                        <div class="flex items-center">
+                        <div class="flex items-center flex-wrap">
                             <div class="flex">
-                                <input id="accept-terms" wire:model="accept_terms" type="checkbox" class="shrink-0 mt-0.5 border-gray-200 rounded text-blue-600 focus:ring-blue-500 dark:bg-neutral-800 dark:border-neutral-700 dark:checked:bg-blue-500 dark:checked:border-blue-500 dark:focus:ring-offset-gray-800">
+                                <input id="accept_terms" wire:model="accept_terms" type="checkbox" class="shrink-0 mt-0.5 border-gray-200 rounded text-blue-600 focus:ring-blue-500 dark:bg-neutral-800 dark:border-neutral-700 dark:checked:bg-blue-500 dark:checked:border-blue-500 dark:focus:ring-offset-gray-800" aria-describedby="accept_terms-error">
                             </div>
                             <div class="ms-3">
-                                <label for="accept-terms" class="text-sm dark:text-white">Elfogadom a <a class="text-blue-600 decoration-2 hover:underline focus:outline-none focus:underline font-medium dark:text-blue-500" href="#">Felhasználói feltételeket</a></label>
+                                <label for="accept_terms" class="text-sm dark:text-white">Elfogadom a <a class="text-blue-600 decoration-2 hover:underline focus:outline-none focus:underline font-medium dark:text-blue-500" href="#">Felhasználói feltételeket</a></label>
                             </div>
+                            @error('accept_terms')
+                                <p class="grow w-full text-xs text-red-600 mt-2" id="accept_terms-error">{{ $message }}</p>
+                            @enderror
                         </div>
                         <!-- End Checkbox -->
 
