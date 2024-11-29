@@ -1,0 +1,17 @@
+Checkout Page:
+    - shipping_methods és payment_methods renderelése a db-ből
+    - ha bevan jelentkezve a felhasználó az adatok automatikus betöltése
+    - a rendelés végösszeg automatikus frissítése a választott szállítási és/vagy fizetési mód plusz költségével
+Migrations:
+    - helytelenül van írva a payment_methods db neve
+    - a payment és shipping methods db szerekeztbe a kövi mezők kellenének: name (ahogy a FE megjelenik), value (ahogy az inputok, BE azonosítja
+    ), cost, provider, is_active
+    - az orders db-ben elvan írva a shipping_amount neve
+    - az orderItems db át lehetne alakítani úgy, ahogy a CartManagement beteszi a sütikbe, így nem kéne átalakítani aza datokat amikor menetem a rendelést
+        - új mezők (order_id, product_id, name, image, quantity, price, total_amount)
+Profile Page:
+    - address menedzsment
+Cart Page:
+    - kupon használat megvalosítása
+Product Page:
+    - termék variánsok kezelése

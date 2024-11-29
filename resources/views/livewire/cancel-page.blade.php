@@ -1,3 +1,3 @@
 <div>
-    {{-- The best athlete wants his opponent at his best. --}}
+    <p>Rendelésed nem került rögzítésre, kérlek ismételd meg.</p>
 </div>

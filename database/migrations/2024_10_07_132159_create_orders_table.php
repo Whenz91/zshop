@@ -13,6 +13,7 @@ return new class extends Migration
     {
         Schema::create('orders', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('user_id')->constrained('users')->cascadeOnDelete();
             $table->string('customer_name');
             $table->string('customer_email');
             $table->string('customer_phone');
@@ -32,7 +33,8 @@ return new class extends Migration
             $table->string('shipping_method');
             $table->enum('status', ['new', 'processing', 'shipped', 'delivered', 'canceled'])->default('new');
             $table->string('currency')->nullable();
-            $table->decimal('shiping_amount', 10, 2)->nullable();
+            $table->decimal('shipping_fee', 10, 2)->nullable();
+            $table->decimal('payment_fee', 10, 2)->nullable();
             $table->text('notes')->nullable();
             $table->timestamps();
         });

@@ -13,7 +13,8 @@ return new class extends Migration
     {
         Schema::create('paymenth_methods', function (Blueprint $table) {
             $table->id();
-            $table->string('payment_type');
+            $table->string('name');
+            $table->string('value');
             $table->decimal('cost', 10, 2)->default(0);
             $table->string('provider')->nullable();
             $table->boolean('is_active')->default(true);

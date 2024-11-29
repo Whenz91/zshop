@@ -121,11 +121,11 @@
     
                         <div class="relative flex items-start border border-gray-200 rounded-lg py-3 px-2">
                             <div class="flex items-center h-5 mt-1">
-                                <input id="bank_card" wire:model="payment_method" type="radio" class="border-gray-200 rounded text-blue-600 focus:ring-blue-500 disabled:opacity-50 disabled:pointer-events-none dark:bg-neutral-800 dark:border-neutral-700 dark:checked:bg-blue-500 dark:checked:border-blue-500 dark:focus:ring-offset-gray-800" aria-describedby="bank_card-description" value="bank_card">
+                                <input id="stripe" wire:model="payment_method" type="radio" class="border-gray-200 rounded text-blue-600 focus:ring-blue-500 disabled:opacity-50 disabled:pointer-events-none dark:bg-neutral-800 dark:border-neutral-700 dark:checked:bg-blue-500 dark:checked:border-blue-500 dark:focus:ring-offset-gray-800" aria-describedby="stripe-description" value="stripe">
                             </div>
-                            <label for="bank_card" class="ms-3">
-                                <span class="block text-sm font-semibold text-gray-800 dark:text-neutral-300">Bankkártya</span>
-                                <span id="bank_card-description" class="block text-sm text-gray-600 dark:text-neutral-500">Fizetés online kártyával a Stripe fizetési szolgáltató oldalán.</span>
+                            <label for="stripe" class="ms-3">
+                                <span class="block text-sm font-semibold text-gray-800 dark:text-neutral-300">Online kártyás</span>
+                                <span id="stripe-description" class="block text-sm text-gray-600 dark:text-neutral-500">Fizetés online kártyával a Stripe fizetési szolgáltató oldalán.</span>
                             </label>
                         </div>
                     </div>

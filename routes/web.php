@@ -33,8 +33,8 @@ Route::get('/products/{slug}', ProductDetailPage::class)->name('product');
 
 Route::get('/cart', CartPage::class)->name('cart');
 Route::get('/checkout', CheckoutPage::class)->name('checkout');
-Route::get('/success', SuccessPage::class)->name('success-order');
-Route::get('/cancel', CancelPage::class)->name('cancel-order');
+Route::get('/success', SuccessPage::class)->name('success_order');
+Route::get('/cancel', CancelPage::class)->name('cancel_order');
 
 
 Route::middleware('guest')->group(function () {

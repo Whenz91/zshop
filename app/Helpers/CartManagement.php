@@ -115,6 +115,23 @@ class CartManagement {
 
         return $cart_items;
     }
+    //tarnsform cart_items to order_items
+    static public function transformCartItemsToOrderItems() {
+        $cart_items = self::getCartItemsFromCookie();
+
+        $order_items = [];
+
+        foreach($cart_items as $item) {
+            $order_items[] = [
+                'product_id' => $item['product_id'],
+                'quantity' => $item['quantity'],
+                'unit_amount' => $item['price'],
+                'total_amount' => $item['total_amount']
+            ];
+        }
+
+        return $order_items;
+    }
 
     //increment item quantity
     static public function incrementQuantityToCartItem($product_id) 
