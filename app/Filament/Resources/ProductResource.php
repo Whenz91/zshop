@@ -55,6 +55,9 @@ class ProductResource extends Resource
                     ->required()
                     ->numeric()
                     ->prefix('Ft'),
+                Forms\Components\TextInput::make('tax')
+                    ->required()
+                    ->default(0.27),
                 Forms\Components\TextInput::make('quantity')
                     ->numeric()
                     ->default(1),

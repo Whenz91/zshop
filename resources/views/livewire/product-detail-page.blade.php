@@ -49,7 +49,7 @@
             </li>
          </ul>
 
-         <p class="mt-5 mb-6 text-xl">Ár: <span class="font-bold">{{ Number::currency($product->price , in: 'HUF', locale: 'hu') }}</span></p>
+         <p class="mt-5 mb-6 text-xl">Bruttó ár: <span class="font-bold">{{ Number::currency(($product->price * (1 + $product->tax)) , in: 'HUF', locale: 'hu') }}</span></p>
 
          <!-- Input Number -->
          <div class="py-2 px-3 inline-block bg-white border border-gray-200 rounded-lg dark:bg-neutral-900 dark:border-neutral-700" data-hs-input-number="">

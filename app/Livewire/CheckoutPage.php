@@ -2,32 +2,108 @@
 
 namespace App\Livewire;
 
-use App\Helpers\CartManagement;
+use Stripe\Stripe;
 use App\Models\Order;
 use Livewire\Component;
-use Livewire\Attributes\Title;
+use Livewire\Attributes\On;
 use Stripe\Checkout\Session;
-use Stripe\Stripe;
+use App\Models\PaymenthMethod;
+use App\Models\ShippingMethod;
+use Livewire\Attributes\Title;
+use App\Helpers\CartManagement;
+use App\Helpers\PaymentManagement;
+use App\Helpers\ShippingManagement;
 
 #[Title('Pénztár - Zolárium')]
 class CheckoutPage extends Component
 {
 
+    public $user_id = 0;
     public $customer_name;
     public $customer_email;
     public $customer_phone;
     public $billing_country = 'Magyarország';
-    public $billing_state = "please_select";
+    public $billing_state;
     public $billing_zipcode;
     public $billing_city;
     public $billing_street;
-    public $shipping_method = 'house';
-    public $payment_method = 'cod';
+    public $shipping_method;
+    public $payment_method;
     public $shipping_country = '';
     public $shipping_state = '';
     public $shipping_zipcode = '';
     public $shipping_city = '';
     public $shipping_street = '';
+
+    public $cart_items;
+    public $total_summary;
+
+    public $shipping_fee = 0;
+    public $payment_fee = 0;
+
+    public function mount() {
+        if(auth()->user()) {
+            $this->user_id = auth()->user()->id;
+            $this->customer_name = auth()->user()->name;
+            $this->customer_email = auth()->user()->email;
+        }
+        $this->cart_items = CartManagement::getCartItemsFromCookie();
+        $this->total_summary = CartManagement::calculateTotalSummary($this->cart_items);
+
+        $shipping_method = ShippingManagement::getMethodFromCookie();
+        $payment_method = PaymentManagement::getMethodFromCookie();
+
+        if( $shipping_method) { 
+            $this->shipping_method =  $shipping_method['method_value'];
+            $this->shipping_fee = $shipping_method['method_cost'];
+        }
+        if($payment_method) {
+            $this->payment_method = $payment_method['method_value'];
+            $this->payment_fee = $payment_method['method_cost'];
+        }
+    }
+
+    #[On('update-shipping')] 
+    public function updateShipping()
+    {
+        if(ShippingManagement::getMethodFromCookie()) {
+            ShippingManagement::clearMethod();
+            ShippingManagement::addMethodToCookie($this->shipping_method);
+            $this->dispatch('update-total');
+        } else {
+            ShippingManagement::addMethodToCookie($this->shipping_method);
+            $this->dispatch('update-total');
+        }
+    }
+
+    #[On('update-payment')] 
+    public function updatePayment()
+    {
+        if(PaymentManagement::getMethodFromCookie()) {
+            PaymentManagement::clearMethod();
+            PaymentManagement::addMethodToCookie($this->payment_method);
+            $this->dispatch('update-total');
+        } else {
+            PaymentManagement::addMethodToCookie($this->payment_method);
+            $this->dispatch('update-total');
+        }
+    }
+    
+    #[On('update-total')]
+    public function updateTotal() 
+    {
+        $this->total_summary = CartManagement::calculateTotalSummary($this->cart_items);
+    }
+
+    #[On('state-update')]
+    public function updateState($value) {
+        if($value['name'] == 'billing_state') {
+            $this->billing_state = $value['value'];
+        } elseif($value['name'] == 'shipping_state') {
+            $this->shipping_state = $value['value'];
+        }
+    }
+
 
     public function placeOrder() {
         $this->validate([
@@ -39,7 +115,10 @@ class CheckoutPage extends Component
             'billing_zipcode' => 'required',
             'billing_city' => 'required',
             'billing_street' => 'required',
+            'shipping_method' => 'required',
+            'payment_method' => 'required',
         ]);
+
 
         $cart_items = CartManagement::getCartItemsFromCookie();
 
@@ -49,16 +128,42 @@ class CheckoutPage extends Component
             $line_items[] = [
                 'price_data' => [
                     'currency' => 'huf',
-                    'unit_amount' => $item['price'] * 100,
+                    'unit_amount' => (($item['price'] * (1 + $item['tax'])) * 100),
                     'product_data' => [
                         'name' => $item['name']
                     ]
-                    ],
+                ],
                 'quantity' => $item['quantity']
             ];
         }
 
+        if($this->shipping_fee > 0) {
+            $line_items[] = [
+                'price_data' => [
+                    'currency' => 'huf',
+                    'unit_amount' => $this->shipping_fee * 100,
+                    'product_data' => [
+                        'name' => 'Szállítás díja'
+                    ]
+                ],
+                'quantity' => 1
+            ];
+        }
+        if($this->payment_fee) {
+            $line_items[] = [
+                'price_data' => [
+                    'currency' => 'huf',
+                    'unit_amount' => $this->payment_fee * 100,
+                    'product_data' => [
+                        'name' => 'Utánvét díja'
+                    ]
+                ],
+                'quantity' => 1
+            ];
+        }
+
         $order = new Order();
+        $order->user_id = $this->user_id;
         $order->customer_name = $this->customer_name;
         $order->customer_email = $this->customer_email;
         $order->customer_phone = $this->customer_phone;
@@ -77,7 +182,8 @@ class CheckoutPage extends Component
         $order->status = 'new';
         $order->currency = 'huf';
         $order->shipping_method = $this->shipping_method;
-        $order->shiping_amount = 0;
+        $order->shipping_fee = $this->shipping_fee;
+        $order->payment_fee = $this->payment_fee;
         $order->notes = '';
 
         $redirect_url = '';
@@ -102,24 +208,21 @@ class CheckoutPage extends Component
         //le kezelem, ha más model-nek kell az order_id
         //$address->orderId = $order->id;
         //$address->save();
-        $order->orderItems()->createMany(CartManagement::transformCartItemsToOrderItems());
+        $order->orderItems()->createMany($cart_items);
         CartManagement::clearCartItems();
+        ShippingManagement::clearMethod();
+        PaymentManagement::clearMethod();
         
         return redirect($redirect_url);
      }
 
     public function render()
     {
-        $cart_items = CartManagement::getCartItemsFromCookie();
-        $total_summary = CartManagement::calculateTotalSummary($cart_items);
-
-        /**
-         * TODO render shipping_methods and payment_methods form DB
-         */
-
         return view('livewire.checkout-page', [
-            'cart_items' => $cart_items,
-            'total_summary' => $total_summary
+            'cart_items' => $this->cart_items,
+            'total_summary' => $this->total_summary,
+            'shipping_methods' => ShippingMethod::all(),
+            'payment_methods' => PaymenthMethod::all()
         ]);
     }
 }

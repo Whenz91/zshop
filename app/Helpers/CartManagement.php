@@ -7,7 +7,10 @@ use Illuminate\Support\Facades\Cookie;
 
 class CartManagement {
     
-    //add item to cart
+    /**
+     * Add item to cart
+     * @return int
+     */
     static public function addItemToCart($product_id) {
         $cart_items = self::getCartItemsFromCookie();
 
@@ -23,8 +26,9 @@ class CartManagement {
         if($existing_item !== null) {
             $cart_items[$existing_item]['quantity']++;
             $cart_items[$existing_item]['total_amount'] = $cart_items[$existing_item]['quantity'] * $cart_items[$existing_item]['price'];
+            $cart_items[$existing_item]['tax_amount'] = $cart_items[$existing_item]['total_amount'] * $cart_items[$existing_item]['tax'];
         } else {
-            $product = Product::where('id', $product_id)->first(['id', 'name', 'price', 'images']);
+            $product = Product::where('id', $product_id)->first(['id', 'name', 'price', 'tax', 'images']);
 
             if($product) {
                 $cart_items[] = [
@@ -33,7 +37,9 @@ class CartManagement {
                     'image' => $product->images[0],
                     'quantity' => 1,
                     'price' => $product->price,
+                    'tax' => $product->tax,
                     'total_amount' => $product->price,
+                    'tax_amount' => $product->price * $product->tax,
                 ];
             }
         }
@@ -43,7 +49,10 @@ class CartManagement {
         return count($cart_items);
     }
 
-    //add item to cart with quantity
+    /**
+     * Add item to cart with quantity
+     * @return int
+     */
     static public function addItemToCartWithQty($product_id, $quantity = 1) {
         $cart_items = self::getCartItemsFromCookie();
 
@@ -59,8 +68,9 @@ class CartManagement {
         if($existing_item !== null) {
             $cart_items[$existing_item]['quantity'] = $quantity;
             $cart_items[$existing_item]['total_amount'] = $cart_items[$existing_item]['quantity'] * $cart_items[$existing_item]['price'];
+            $cart_items[$existing_item]['tax_amount'] = $cart_items[$existing_item]['total_amount'] * $cart_items[$existing_item]['tax'];
         } else {
-            $product = Product::where('id', $product_id)->first(['id', 'name', 'price', 'images']);
+            $product = Product::where('id', $product_id)->first(['id', 'name', 'price', 'tax', 'images']);
 
             if($product) {
                 $cart_items[] = [
@@ -69,7 +79,9 @@ class CartManagement {
                     'image' => $product->images[0],
                     'quantity' => $quantity,
                     'price' => $product->price,
-                    'total_amount' => $product->price,
+                    'tax' => $product->tax,
+                    'total_amount' => $product->price * $quantity,
+                    'tax_amount' => ($product->price * $product->tax) * $quantity,
                 ];
             }
         }
@@ -78,7 +90,11 @@ class CartManagement {
 
         return count($cart_items);
     }
-    //remove item from cart
+
+    /**
+     * Remove item from cart
+     * @return array
+     */
     static public function removeCartItem($product_id) 
     {
         $cart_items = self::getCartItemsFromCookie();
@@ -94,18 +110,28 @@ class CartManagement {
         return $cart_items;
     }
 
-    //add cart items to cookie
+    /**
+     * Add cart items to Cookie
+     * @param array cart_items
+     * @return void
+     */
     static public function addCartItemsToCookie($cart_items) {
         //store cart items in cookie 30 days
         Cookie::queue('cart_items', json_encode($cart_items), 60 * 24 * 30);
     }
 
-    //clear cart items from cookie
+    /**
+     * Clear cart items from Cookie
+     * @return void 
+    */
     static public function clearCartItems() {
         Cookie::queue(Cookie::forget('cart_items'));
     }
 
-    //get all cart items from cookie
+    /**
+     * Get all cart items from cookie
+     * @return array
+     */
     static public function getCartItemsFromCookie() {
         $cart_items = json_decode(Cookie::get('cart_items'), true);
 
@@ -115,6 +141,7 @@ class CartManagement {
 
         return $cart_items;
     }
+    
     //tarnsform cart_items to order_items
     static public function transformCartItemsToOrderItems() {
         $cart_items = self::getCartItemsFromCookie();
@@ -142,6 +169,7 @@ class CartManagement {
             if($item['product_id'] == $product_id) {
                 $cart_items[$key]['quantity']++;
                 $cart_items[$key]['total_amount'] = $cart_items[$key]['quantity'] * $cart_items[$key]['price'];
+                $cart_items[$key]['tax_amount'] = $cart_items[$key]['total_amount'] * $cart_items[$key]['tax'];
             }
         }
 
@@ -160,6 +188,7 @@ class CartManagement {
                 if($cart_items[$key]['quantity'] > 1) {
                     $cart_items[$key]['quantity']--;
                     $cart_items[$key]['total_amount'] = $cart_items[$key]['quantity'] * $cart_items[$key]['price'];
+                    $cart_items[$key]['tax_amount'] = $cart_items[$key]['total_amount'] * $cart_items[$key]['tax'];
                 }
             }
         }
@@ -171,21 +200,39 @@ class CartManagement {
 
     //calculate grand total
     static public function calculateGrandTotal($items) {
-        return array_sum(array_column($items, 'total_amount'));
+        $grand_net_total = array_sum(array_column($items, 'total_amount'));
+        $tax_total = array_sum(array_column($items, 'tax_amount'));
+
+        return  ($grand_net_total + $tax_total);
     }
 
     /**
-     * Return calculated grand, net totals and tax
+     * Return order calculated net, tax and gross total amount
      */
     static public function calculateTotalSummary($items) {
-        $grand_total = array_sum(array_column($items, 'total_amount'));
-        $vat = 1.27;
-        $net_total = $grand_total / $vat;
+        $shipping_method = ShippingManagement::getMethodFromCookie();
+        $payment_method = PaymentManagement::getMethodFromCookie();
+
+        $grand_net_total = array_sum(array_column($items, 'total_amount'));
+        $tax_total = array_sum(array_column($items, 'tax_amount'));
+        $shipping_cost = 0;
+        $payment_cost = 0;
+
+        if($shipping_method) {
+            $shipping_cost = $shipping_method['method_cost'];
+        }
+        if($payment_method) {
+            $payment_cost = $payment_method['method_cost'];
+        }
+
+        $grand_gross_total = $grand_net_total + $tax_total + $shipping_cost + $payment_cost;
 
         return [
-            'grand_total' => $grand_total,
-            'net_total' => $net_total,
-            'tax' => $grand_total - $net_total
+            'grand_net_total' => $grand_net_total,
+            'tax_total' => $tax_total,
+            'shipping_cost' => $shipping_cost,
+            'payment_cost' => $payment_cost,
+            'grand_gross_total' => $grand_gross_total
         ];
     }
 

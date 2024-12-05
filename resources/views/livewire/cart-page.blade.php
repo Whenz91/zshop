@@ -13,6 +13,7 @@
                         <th scope="col" class="px-6 py-3 text-start text-xs font-medium text-gray-500 uppercase dark:text-neutral-500">Termék</th>
                         <th scope="col" class="px-6 py-3 text-start text-xs font-medium text-gray-500 uppercase dark:text-neutral-500">Mennyiség</th>
                         <th scope="col" class="px-6 py-3 text-start text-xs font-medium text-gray-500 uppercase dark:text-neutral-500">Egység ár</th>
+                        <th scope="col" class="px-6 py-3 text-start text-xs font-medium text-gray-500 uppercase dark:text-neutral-500">ÁFA</th>
                         <th scope="col" class="px-6 py-3 text-start text-xs font-medium text-gray-500 uppercase dark:text-neutral-500">Ár összesen</th>
                         <th scope="col" class="px-6 py-3 text-start text-xs font-medium text-gray-500 uppercase dark:text-neutral-500"></th>
                         </tr>
@@ -46,8 +47,9 @@
                                 </div>
                                 <!-- End Input Number -->
                             </td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-800 dark:text-neutral-200">{{ Number::currency($item['price'] , in: 'HUF', locale: 'hu') }}</td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-800 dark:text-neutral-200">{{ Number::currency($item['total_amount'] , in: 'HUF', locale: 'hu') }}</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-800 dark:text-neutral-200">{{ Number::currency(($item['price'] * (1 + $item['tax'])) , in: 'HUF', locale: 'hu') }}</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-800 dark:text-neutral-200">{{ Number::currency($item['tax_amount'] , in: 'HUF', locale: 'hu') }}</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-800 dark:text-neutral-200">{{ Number::currency(($item['total_amount'] + $item['tax_amount']) , in: 'HUF', locale: 'hu') }}</td>
                             <td class="pe-3">
                                 <button wire:click="removeItem({{ $item['product_id'] }})" type="button" class="py-3 px-4 flex justify-center items-center size-[46px] text-sm font-medium rounded-lg border border-transparent bg-red-600 text-white hover:bg-red-700 focus:outline-none focus:bg-red-700 disabled:opacity-50 disabled:pointer-events-none">
                                     <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="size-6 stroke-white">
@@ -78,9 +80,9 @@
                     </button>
                 </div>
             </div>
-            <p class="dark:text-white mb-2">Nettó összesen: <span>{{ Number::currency($net_total , in: 'HUF', locale: 'hu') }}</span></p>
-            <p class="dark:text-white mb-2">ÁFA (27%): <span>{{ Number::currency($tax , in: 'HUF', locale: 'hu') }}</span></p>
-            <p class="text-3xl dark:text-white mb-10">Bruttó összesen: <span>{{ Number::currency($grand_total , in: 'HUF', locale: 'hu') }}</span></p>
+            <p class="dark:text-white mb-2">Nettó összesen: <span>{{ Number::currency($total_amounts['grand_net_total'] , in: 'HUF', locale: 'hu') }}</span></p>
+            <p class="dark:text-white mb-2">ÁFA (27%): <span>{{ Number::currency($total_amounts['tax_total'] , in: 'HUF', locale: 'hu') }}</span></p>
+            <p class="text-3xl dark:text-white mb-10">Bruttó összesen: <span>{{ Number::currency($total_amounts['grand_gross_total'] , in: 'HUF', locale: 'hu') }}</span></p>
 
             <a href="{{ route('checkout') }}" class="w-full py-3 px-4 inline-flex justify-center items-center gap-x-2 text-sm font-medium rounded-lg border border-transparent bg-green-500 text-white hover:bg-green-700 focus:outline-none focus:bg-green-700 disabled:opacity-50 disabled:pointer-events-none">
                 Tovább a fizetéshez

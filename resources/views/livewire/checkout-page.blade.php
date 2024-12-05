@@ -43,12 +43,7 @@
                 </div>
                 <div>
                     <label for="input-label" class="block text-sm font-medium mb-2 dark:text-white">Megye</label>
-                    <select class="py-3 px-4 pe-9 block w-full border border-gray-200 rounded-lg text-sm focus:border-blue-500 focus:ring-blue-500 disabled:opacity-50 disabled:pointer-events-none dark:bg-neutral-900 dark:border-neutral-700 dark:text-neutral-400 dark:placeholder-neutral-500 dark:focus:ring-neutral-600" wire:model="billing_state">
-                        <option value="please_select">Válassz megyét</option>
-                        <option value="Békés">Békés</option>
-                        <option value="Csongrád-Csanád">Csongrád-Csanád</option>
-                        <option value="Budapest">Budapest</option>
-                    </select>
+                    <livewire:form-components.state-select name="billing_state" :selectedValue="$billing_state" />
                     @error('billing_state')
                         <p class="text-xs text-red-600 mt-2">{{ $message }}</p>
                     @enderror
@@ -82,25 +77,17 @@
                     <hr class="mb-6">
     
                     <div class="grid space-y-3">
-                        <div class="relative flex items-start border border-gray-200 rounded-lg py-3 px-2">
+                        @foreach($shipping_methods as $method)
+                        <div class="relative flex items-start border border-gray-200 rounded-lg py-3 px-2" wire:key="{{ $method->id }}" wire:click="$dispatch('update-shipping')">
                             <div class="flex items-center h-5 mt-1">
-                                <input id="delivery_to_home" wire:model="shipping_method" type="radio" class="border-gray-200 rounded text-blue-600 focus:ring-blue-500 disabled:opacity-50 disabled:pointer-events-none dark:bg-neutral-800 dark:border-neutral-700 dark:checked:bg-blue-500 dark:checked:border-blue-500 dark:focus:ring-offset-gray-800" aria-describedby="delivery_to_home-description" checked value="house">
+                                <input id="{{ $method->value }}" wire:model="shipping_method" type="radio" class="border-gray-200 rounded text-blue-600 focus:ring-blue-500 disabled:opacity-50 disabled:pointer-events-none dark:bg-neutral-800 dark:border-neutral-700 dark:checked:bg-blue-500 dark:checked:border-blue-500 dark:focus:ring-offset-gray-800" aria-describedby="delivery_to_home-description" value="{{ $method->value }}">
                             </div>
-                            <label for="delivery_to_home" class="ms-3">
-                                <span class="block text-sm font-semibold text-gray-800 dark:text-neutral-300">GLS házhoz szállítás 1900 Ft</span>
-                                <span id="delivery_to_home-description" class="block text-sm text-gray-600 dark:text-neutral-500">Szállítási 1-2 munkanapon belül.</span>
+                            <label for="{{ $method->value }}" class="ms-3">
+                                <span class="block text-sm font-semibold text-gray-800 dark:text-neutral-300">{{ $method->name }} ({{ $method->provider }})</span>
+                                <span id="delivery_to_home-description" class="block text-sm text-gray-600 dark:text-neutral-500">{{ Number::currency($method->cost , in: 'HUF', locale: 'hu') }}</span>
                             </label>
                         </div>
-    
-                        <div class="relative flex items-start border border-gray-200 rounded-lg py-3 px-2">
-                            <div class="flex items-center h-5 mt-1">
-                                <input id="delivery_to_point" wire:model="shipping_method" type="radio" class="border-gray-200 rounded text-blue-600 focus:ring-blue-500 disabled:opacity-50 disabled:pointer-events-none dark:bg-neutral-800 dark:border-neutral-700 dark:checked:bg-blue-500 dark:checked:border-blue-500 dark:focus:ring-offset-gray-800" aria-describedby="delivery_to_point-description" value="point">
-                            </div>
-                            <label for="delivery_to_point" class="ms-3">
-                                <span class="block text-sm font-semibold text-gray-800 dark:text-neutral-300">GLS csomagpont 900 Ft</span>
-                                <span id="delivery_to_point-description" class="block text-sm text-gray-600 dark:text-neutral-500">Szállítás 1-2 munkanapon belül.</span>
-                            </label>
-                        </div>
+                        @endforeach
                     </div>
                 </fieldset>
     
@@ -109,25 +96,18 @@
                     <hr class="mb-6">
     
                     <div class="grid space-y-3">
-                        <div class="relative flex items-start border border-gray-200 rounded-lg py-3 px-2">
+                        @foreach($payment_methods as $method)
+                        <div class="relative flex items-start border border-gray-200 rounded-lg py-3 px-2" wire:key="{{ $method->id }}" wire:click="$dispatch('update-payment')">
                             <div class="flex items-center h-5 mt-1">
-                                <input id="cod" wire:model="payment_method" type="radio" class="border-gray-200 rounded text-blue-600 focus:ring-blue-500 disabled:opacity-50 disabled:pointer-events-none dark:bg-neutral-800 dark:border-neutral-700 dark:checked:bg-blue-500 dark:checked:border-blue-500 dark:focus:ring-offset-gray-800" aria-describedby="cod-description" checked value="cod">
+                                <input id="{{ $method->value }}" wire:model="payment_method" type="radio" class="border-gray-200 rounded text-blue-600 focus:ring-blue-500 disabled:opacity-50 disabled:pointer-events-none dark:bg-neutral-800 dark:border-neutral-700 dark:checked:bg-blue-500 dark:checked:border-blue-500 dark:focus:ring-offset-gray-800" aria-describedby="cod-description" value="{{ $method->value }}">
                             </div>
-                            <label for="cod" class="ms-3">
-                                <span class="block text-sm font-semibold text-gray-800 dark:text-neutral-300">Utánvét 450 Ft</span>
-                                <span id="cod-description" class="block text-sm text-gray-600 dark:text-neutral-500">Fizetés készpénzben vagy kártyával a futárnál.</span>
+                            <label for="{{ $method->value }}" class="ms-3">
+                                <span class="block text-sm font-semibold text-gray-800 dark:text-neutral-300">{{ $method->name }} ({{ $method->provider }})</span>
+                                <span id="cod-description" class="block text-sm text-gray-600 dark:text-neutral-500">{{ Number::currency($method->cost , in: 'HUF', locale: 'hu') }}</span>
                             </label>
                         </div>
+                        @endforeach
     
-                        <div class="relative flex items-start border border-gray-200 rounded-lg py-3 px-2">
-                            <div class="flex items-center h-5 mt-1">
-                                <input id="stripe" wire:model="payment_method" type="radio" class="border-gray-200 rounded text-blue-600 focus:ring-blue-500 disabled:opacity-50 disabled:pointer-events-none dark:bg-neutral-800 dark:border-neutral-700 dark:checked:bg-blue-500 dark:checked:border-blue-500 dark:focus:ring-offset-gray-800" aria-describedby="stripe-description" value="stripe">
-                            </div>
-                            <label for="stripe" class="ms-3">
-                                <span class="block text-sm font-semibold text-gray-800 dark:text-neutral-300">Online kártyás</span>
-                                <span id="stripe-description" class="block text-sm text-gray-600 dark:text-neutral-500">Fizetés online kártyával a Stripe fizetési szolgáltató oldalán.</span>
-                            </label>
-                        </div>
                     </div>
                 </fieldset>
             </div>
@@ -150,12 +130,7 @@
                     </div>
                     <div>
                         <label for="input-label" class="block text-sm font-medium mb-2 dark:text-white">Megye</label>
-                        <select class="py-3 px-4 pe-9 block w-full border border-gray-200 rounded-lg text-sm focus:border-blue-500 focus:ring-blue-500 disabled:opacity-50 disabled:pointer-events-none dark:bg-neutral-900 dark:border-neutral-700 dark:text-neutral-400 dark:placeholder-neutral-500 dark:focus:ring-neutral-600" wire:model="shipping_state">
-                            <option selected>Válassz megyét</option>
-                            <option value="Békés">Békés</option>
-                            <option value="Csongrád-Csanád">Csongrád-Csanád</option>
-                            <option value="Budapest">Budapest</option>
-                        </select>
+                        <livewire:form-components.state-select name="billing_state" :selectedValue="$shipping_state" />
                     </div>
                     <div>
                         <label for="input-label" class="block text-sm font-medium mb-2 dark:text-white">Irányítószám</label>
@@ -181,7 +156,7 @@
                     <tr>
                         <th scope="col" class="px-6 py-3 text-start text-xs font-medium text-gray-500 uppercase dark:text-neutral-500">Termék</th>
                         <th scope="col" class="px-6 py-3 text-start text-xs font-medium text-gray-500 uppercase dark:text-neutral-500">Mennyiség</th>
-                        <th scope="col" class="px-6 py-3 text-start text-xs font-medium text-gray-500 uppercase dark:text-neutral-500">Ár</th>
+                        <th scope="col" class="px-6 py-3 text-start text-xs font-medium text-gray-500 uppercase dark:text-neutral-500">Bruttó ár összesen</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -189,18 +164,21 @@
                     <tr class="odd:bg-white even:bg-gray-100 dark:odd:bg-neutral-900 dark:even:bg-neutral-800" wire:key="{{ $item['product_id'] }}">
                         <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-800 dark:text-neutral-200">{{ $item['name'] }}</td>
                         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-800 dark:text-neutral-200">{{ $item['quantity'] }}</td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-800 dark:text-neutral-200">{{  Number::currency($item['total_amount'] , in: 'HUF', locale: 'hu') }}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-800 dark:text-neutral-200">{{  Number::currency(($item['total_amount'] + $item['tax_amount']) , in: 'HUF', locale: 'hu') }}</td>
                     </tr>
                     @endforeach
                 </tbody>
             </table>
 
             <div class="grid">
-                <p class="min-w-96 flex justify-between">Szállítási költség: <span>1900 Ft</span></p>
-                <p class="min-w-96 flex justify-between">Utánvét díja: <span>450 Ft</span</p>
-                <p class="min-w-96 flex justify-between">Nettó összesen: <span>{{  Number::currency($total_summary['net_total'] , in: 'HUF', locale: 'hu') }}</span</p>
-                <p class="min-w-96 flex justify-between">Áfa (27%): <span>{{  Number::currency($total_summary['tax'] , in: 'HUF', locale: 'hu') }}</span</p>
-                <p class="min-w-96 flex justify-between">Bruttó összesen: <span>{{  Number::currency($total_summary['grand_total'] , in: 'HUF', locale: 'hu') }}</span</p>
+                <p class="min-w-96 flex justify-between">Nettó összesen: <span>{{  Number::currency($total_summary['grand_net_total'] , in: 'HUF', locale: 'hu') }}</span</p>
+                <p class="min-w-96 flex justify-between">Áfa (27%): <span>{{  Number::currency($total_summary['tax_total'] , in: 'HUF', locale: 'hu') }}</span</p>
+                <p class="min-w-96 flex justify-between">Szállítás díja: <span>{{  Number::currency($total_summary['shipping_cost'] , in: 'HUF', locale: 'hu') }}</span></p>
+                @if($total_summary['payment_cost'] > 0)
+                <p class="min-w-96 flex justify-between">Utánvét díja: <span>{{  Number::currency($total_summary['payment_cost'] , in: 'HUF', locale: 'hu') }}</span</p>
+                @endif
+                <hr class="mt-2 mb-6">
+                <p class="min-w-96 flex justify-between">Bruttó összesen: <span>{{  Number::currency($total_summary['grand_gross_total'] , in: 'HUF', locale: 'hu') }}</span</p>
             </div>
         </div>
     </section>

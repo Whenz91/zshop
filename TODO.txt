@@ -1,17 +1,26 @@
 Checkout Page:
-    - shipping_methods és payment_methods renderelése a db-ből
+    - shipping_methods és payment_methods renderelése a db-ből (DONE)
     - ha bevan jelentkezve a felhasználó az adatok automatikus betöltése
-    - a rendelés végösszeg automatikus frissítése a választott szállítási és/vagy fizetési mód plusz költségével
+    - a rendelés végösszeg automatikus frissítése a választott szállítási és/vagy fizetési mód plusz költségével (DONE)
 Migrations:
     - helytelenül van írva a payment_methods db neve
     - a payment és shipping methods db szerekeztbe a kövi mezők kellenének: name (ahogy a FE megjelenik), value (ahogy az inputok, BE azonosítja
-    ), cost, provider, is_active
-    - az orders db-ben elvan írva a shipping_amount neve
-    - az orderItems db át lehetne alakítani úgy, ahogy a CartManagement beteszi a sütikbe, így nem kéne átalakítani aza datokat amikor menetem a rendelést
-        - új mezők (order_id, product_id, name, image, quantity, price, total_amount)
+    ), cost, provider, is_active (DONE)
+    - az orders db-ben elvan írva a shipping_amount neve (DONE)
+    - az orderItems db át lehetne alakítani úgy, ahogy a CartManagement beteszi a sütikbe, így nem kéne átalakítani az adatokat amikor menetem a rendelést
+        - új mezők (order_id, product_id, name, image, quantity, price, tax, total_amount, tax_amount) (DONE)
 Profile Page:
-    - address menedzsment
+    - address menedzsment (START)
 Cart Page:
     - kupon használat megvalosítása
 Product Page:
     - termék variánsok kezelése
+    - CartManagement termék total_amount most a nettó összesen
+        - a price és a total_amount nettó árak a CartItems és az OrderItems esetén bekerült egy plusz mező tax_amount, kiszámításra kerül az áfa mértéke és a Front-enden kerül átszámításra a nettó ár és az áfa segítségével a bruttó ár
+
+In progress
+    - új migrációt csinálni: php artisan migrate:refresh --seed
+    - tax mező hozzáadása a Product felülethez (DONE)
+    - tax új mező figyelembe vétele a CartManagement-nél, az orderItems-nél (DONE)
+    - address menedzsment a regisztrált felhasználóknál számlázás és szállítás
+    - order-nél új mező user_id kezelése bejelentkezet user_id-ja vagy vendég esetén 0 (DONE)

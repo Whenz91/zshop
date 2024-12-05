@@ -48,7 +48,6 @@ class OrderResource extends Resource
                     ->maxLength(255),
                 Forms\Components\TextInput::make('customer_phone')
                     ->required()
-                    ->numeric()
                     ->maxLength(255),
                 Forms\Components\Fieldset::make('Billing Address Information')
                     ->schema([
@@ -126,9 +125,9 @@ class OrderResource extends Resource
                             ->columnSpan(2),
                     ]),
                     Forms\Components\Select::make('payment_method')
-                        ->options(PaymenthMethod::all()->pluck('payment_type', 'payment_type')),
+                        ->options(PaymenthMethod::all()->pluck('name', 'value')),
                     Forms\Components\Select::make('shipping_method')
-                        ->options(ShippingMethod::all()->pluck('shipping_type', 'shipping_type')),
+                        ->options(ShippingMethod::all()->pluck('name', 'value')),
                     Forms\Components\ToggleButtons::make('status')
                         ->options([
                             'new' => 'New',
@@ -161,28 +160,41 @@ class OrderResource extends Resource
                                         ->required()
                                         ->columnSpan(4)
                                         ->reactive()
-                                        ->afterStateUpdated(fn($state, Set $set) => $set('unit_amount', Product::find($state)?->price ?? 0))
-                                        ->afterStateUpdated(fn($state, Set $set) => $set('total_amount', Product::find($state)?->price ?? 0)),
+                                        ->afterStateUpdated(fn($state, Set $set) => $set('price', Product::find($state)?->price ?? 0))
+                                        ->afterStateUpdated(fn($state, Set $set) => $set('tax', Product::find($state)?->tax ?? 0))
+                                        ->afterStateUpdated(fn($state, Set $set) => $set('total_amount', Product::find($state)?->total_amount ?? Product::find($state)?->price))
+                                        ->afterStateUpdated(fn($state, Set $set, Get $get) => $set('tax_amount', round($get('total_amount') * $get('tax'), 2))),
                                     Forms\Components\TextInput::make('quantity')
                                         ->required()
                                         ->numeric()
                                         ->default(1)
                                         ->minValue(1)
-                                        ->columnSpan(2)
                                         ->reactive()
-                                        ->afterStateUpdated(fn($state, Set $set, Get $get) => $set('total_amount', $state * $get('unit_amount'))),
-                                    Forms\Components\TextInput::make('unit_amount')
+                                        ->afterStateUpdated(fn($state, Set $set, Get $get) => $set('total_amount', $state * $get('price')))
+                                        ->afterStateUpdated(fn($state, Set $set, Get $get) => $set('tax_amount', $get('total_amount') * $get('tax'))),
+                                    Forms\Components\TextInput::make('price')
                                         ->required()
                                         ->numeric()
                                         ->disabled()
                                         ->dehydrated()
                                         ->columnSpan(2),
-                                    Forms\Components\TextInput::make('total_amount')
+                                    Forms\Components\TextInput::make('tax')
+                                        ->required()
+                                        ->numeric()
+                                        ->disabled()
+                                        ->dehydrated(),
+                                        Forms\Components\TextInput::make('total_amount')
                                         ->required()
                                         ->numeric()
                                         ->disabled()
                                         ->dehydrated()
-                                        ->columnSpan(2)
+                                        ->columnSpan(2),
+                                    Forms\Components\TextInput::make('tax_amount')
+                                            ->required()
+                                            ->numeric()
+                                            ->disabled()
+                                            ->dehydrated()
+                                            ->columnSpan(2)
                                 ])->columns(12),
                                 Forms\Components\Placeholder::make('grand_total_placeholder')
                                     ->label('Grand Total')
@@ -193,7 +205,7 @@ class OrderResource extends Resource
                                         }
 
                                         foreach($repeaters as $key => $repeater) {
-                                            $total += $get("orderItems.{$key}.total_amount");
+                                            $total += ($get("orderItems.{$key}.total_amount") + $get("orderItems.{$key}.tax_amount"));
                                         }
 
                                         $set('grand_total', $total);

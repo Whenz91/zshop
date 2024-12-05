@@ -12,36 +12,29 @@ class CartPage extends Component
 {
 
     public $cart_items = [];
-    public $grand_total;
-    public $net_total;
-    public $tax;
+    public $total_amounts = [];
 
-    public function calculateTotals() {
-        $this->grand_total = CartManagement::calculateGrandTotal($this->cart_items);
-        $this->net_total = $this->grand_total / 1.27;
-        $this->tax = $this->grand_total - $this->net_total;
-    }
 
     public function mount() {
         $this->cart_items = CartManagement::getCartItemsFromCookie();
-        $this->calculateTotals();
+        $this->total_amounts = CartManagement::calculateTotalSummary($this->cart_items);
     }
     
     public function removeItem($product_id) {
         $this->cart_items = CartManagement::removeCartItem($product_id);
-        $this->calculateTotals();
-
+        $this->total_amounts = CartManagement::calculateTotalSummary($this->cart_items);
+        
         $this->dispatch('update-cart-count', total_count: count($this->cart_items))->to(Navbar::class);
     }
-
+    
     public function increaseQty($product_id) {
         $this->cart_items = CartManagement::incrementQuantityToCartItem($product_id);
-        $this->calculateTotals();
+        $this->total_amounts = CartManagement::calculateTotalSummary($this->cart_items);
     }
-
+    
     public function decreaseQty($product_id) {
         $this->cart_items = CartManagement::decrementQuantityToCartItem($product_id);
-        $this->calculateTotals();
+        $this->total_amounts = CartManagement::calculateTotalSummary($this->cart_items);
     }
 
     public function render()

@@ -21,6 +21,7 @@ return new class extends Migration
             $table->decimal('price', 10, 2)->nullable();
             $table->decimal('tax', 10, 2)->nullable();
             $table->decimal('total_amount', 10, 2)->nullable();
+            $table->decimal('tax_amount', 10, 2)->nullable();
             $table->timestamps();
         });
     }
