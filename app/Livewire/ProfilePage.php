@@ -20,18 +20,9 @@ class ProfilePage extends Component
     public $new_password;
     public $password_confirmation;
 
-    public $billing_country = 'Magyarország';
-    public $billing_state;
-    public $billing_zipcode;
-    public $billing_city;
-    public $billing_street;
-    public $difShipping;
-
-    public $shipping_country;
-    public $shipping_state;
-    public $shipping_zipcode;
-    public $shipping_city;
-    public $shipping_street;
+    public $billing_address = [];
+    public $shipping_addresses = [];
+   
 
     public function mount() {
         $user = auth()->user();
@@ -39,34 +30,9 @@ class ProfilePage extends Component
         $this->name = $user->name;
         $this->email = $user->email;
 
-        $billing_address = Address::where('user_id', $this->user_id)->where('type', 'billing')->first();
-        $shipping_address = Address::where('user_id', $this->user_id)->where('type', 'shipping')->first();
-        
-        if($billing_address) {
-            $this->billing_country = $billing_address->country;
-            $this->billing_state = $billing_address->state;
-            $this->billing_zipcode = $billing_address->zipcode;
-            $this->billing_city = $billing_address->city;
-            $this->billing_street = $billing_address->street;
-        }
+        $this->billing_address = Address::where('user_id', $this->user_id)->where('type', 'billing')->first();
+        $this->shipping_addresses = Address::where('user_id', $this->user_id)->where('type', 'shipping')->get();
 
-        if($shipping_address) {
-            $this->shipping_country = $shipping_address->country;
-            $this->shipping_state = $shipping_address->state;
-            $this->shipping_zipcode = $shipping_address->zipcode;
-            $this->shipping_city = $shipping_address->city;
-            $this->shipping_street = $shipping_address->street;
-        }
-
-    }
-
-    #[On('state-update')]
-    public function updateState($value) {
-        if($value['name'] == 'billing_state') {
-            $this->billing_state = $value['value'];
-        } elseif($value['name'] == 'shipping_state') {
-            $this->shipping_state = $value['value'];
-        }
     }
 
     public function updateUser() {

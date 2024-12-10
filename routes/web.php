@@ -1,5 +1,6 @@
 <?php
 
+use App\Livewire\AddressPage;
 use App\Livewire\Auth\ForgotPasswordPage;
 use App\Livewire\Auth\LoginPage;
 use App\Livewire\Auth\RegisterPage;
@@ -50,4 +51,5 @@ Route::middleware('auth')->group(function () {
         return redirect('/');
     })->name('logout');
     Route::get('/profile', ProfilePage::class)->name('profile');
+    Route::get('/profile/address/{id}', AddressPage::class)->name('address');
 });
