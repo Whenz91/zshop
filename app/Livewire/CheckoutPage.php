@@ -4,7 +4,9 @@ namespace App\Livewire;
 
 use Stripe\Stripe;
 use App\Models\Order;
+use App\Models\Address;
 use Livewire\Component;
+use Illuminate\Support\Arr;
 use Livewire\Attributes\On;
 use Stripe\Checkout\Session;
 use App\Models\PaymenthMethod;
@@ -29,6 +31,7 @@ class CheckoutPage extends Component
     public $billing_street;
     public $shipping_method;
     public $payment_method;
+    public $dif_address = false;
     public $shipping_country = '';
     public $shipping_state = '';
     public $shipping_zipcode = '';
@@ -46,13 +49,36 @@ class CheckoutPage extends Component
             $this->user_id = auth()->user()->id;
             $this->customer_name = auth()->user()->name;
             $this->customer_email = auth()->user()->email;
+
+            $billing_address = Address::where('user_id', $this->user_id)->where('type', 'billing')->first();
+
+            $this->billing_country = $billing_address->country;
+            $this->billing_state = $billing_address->state;
+            $this->billing_zipcode = $billing_address->zipcode;
+            $this->billing_city = $billing_address->city;
+            $this->billing_street = $billing_address->street;
+
+            $shipping_address = Address::where('user_id', $this->user_id)->where('type', 'shipping')->first();
+            if(!empty($shipping_address)) {
+                $this->dif_address = true;
+                $this->shipping_country = $shipping_address->country;
+                $this->shipping_state = $shipping_address->state;
+                $this->shipping_zipcode = $shipping_address->zipcode;
+                $this->shipping_city = $shipping_address->city;
+                $this->shipping_street = $shipping_address->street;
+            }
+
         }
         $this->cart_items = CartManagement::getCartItemsFromCookie();
         $this->total_summary = CartManagement::calculateTotalSummary($this->cart_items);
 
+        $this->setShippingAndPaymentFees();
+    }
+    
+    public function setShippingAndPaymentFees() {
         $shipping_method = ShippingManagement::getMethodFromCookie();
         $payment_method = PaymentManagement::getMethodFromCookie();
-
+    
         if( $shipping_method) { 
             $this->shipping_method =  $shipping_method['method_value'];
             $this->shipping_fee = $shipping_method['method_cost'];
@@ -69,9 +95,11 @@ class CheckoutPage extends Component
         if(ShippingManagement::getMethodFromCookie()) {
             ShippingManagement::clearMethod();
             ShippingManagement::addMethodToCookie($this->shipping_method);
+            $this->setShippingAndPaymentFees();
             $this->dispatch('update-total');
         } else {
             ShippingManagement::addMethodToCookie($this->shipping_method);
+            $this->setShippingAndPaymentFees();
             $this->dispatch('update-total');
         }
     }
@@ -82,9 +110,11 @@ class CheckoutPage extends Component
         if(PaymentManagement::getMethodFromCookie()) {
             PaymentManagement::clearMethod();
             PaymentManagement::addMethodToCookie($this->payment_method);
+            $this->setShippingAndPaymentFees();
             $this->dispatch('update-total');
         } else {
             PaymentManagement::addMethodToCookie($this->payment_method);
+            $this->setShippingAndPaymentFees();
             $this->dispatch('update-total');
         }
     }

@@ -10,6 +10,7 @@ use App\Livewire\CartPage;
 use App\Livewire\CategoriesPage;
 use App\Livewire\CheckoutPage;
 use App\Livewire\HomePage;
+use App\Livewire\OrderHistoryPage;
 use App\Livewire\ProductDetailPage;
 use App\Livewire\ProductsPage;
 use App\Livewire\ProfilePage;
@@ -52,4 +53,5 @@ Route::middleware('auth')->group(function () {
     })->name('logout');
     Route::get('/profile', ProfilePage::class)->name('profile');
     Route::get('/profile/address/{id}', AddressPage::class)->name('address');
+    Route::get('/profile/orders', OrderHistoryPage::class)->name('order_history');
 });

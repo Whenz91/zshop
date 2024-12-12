@@ -34,7 +34,7 @@
                 <hr class="col-span-2 mb-6">
                 <div>
                     <label for="input-label" class="block text-sm font-medium mb-2 dark:text-white">Ország</label>
-                    <select class="py-3 px-4 pe-9 block w-full border bg-gray-100 border-transparent rounded-lg text-sm focus:border-blue-500 focus:ring-blue-500 disabled:opacity-50 disabled:pointer-events-none dark:bg-neutral-700 dark:border-transparent dark:text-neutral-400 dark:focus:ring-neutral-600" wire:model="billing_country">
+                    <select class="py-3 px-4 pe-9 block w-full border border-gray-200 rounded-lg text-sm focus:border-blue-500 focus:ring-blue-500 disabled:opacity-50 disabled:pointer-events-none dark:bg-neutral-700 dark:border-transparent dark:text-neutral-400 dark:focus:ring-neutral-600" wire:model="billing_country">
                         <option value="Magyarország">Magyarország</option>
                     </select>
                     @error('billing_country')
@@ -112,19 +112,19 @@
                 </fieldset>
             </div>
 
-            <fieldset x-data="{ open: false }">
+            <fieldset x-data="{ open: $wire.dif_address }">
                 <legend class="text-lg font-medium mb-2">Szállítási cím</legend>
                 <hr class="mb-6">
 
                 <div class="flex mb-4">
-                    <input type="checkbox" class="shrink-0 mt-0.5 border-gray-200 rounded text-blue-600 focus:ring-blue-500 disabled:opacity-50 disabled:pointer-events-none dark:bg-neutral-800 dark:border-neutral-700 dark:checked:bg-blue-500 dark:checked:border-blue-500 dark:focus:ring-offset-gray-800" id="hs-default-checkbox" x-on:click="open = ! open">
-                    <label for="hs-default-checkbox" class="text-sm text-gray-500 ms-3 dark:text-neutral-400">Szállítás eltérő címre</label>
+                    <input type="checkbox" class="shrink-0 mt-0.5 border-gray-200 rounded text-blue-600 focus:ring-blue-500 disabled:opacity-50 disabled:pointer-events-none dark:bg-neutral-800 dark:border-neutral-700 dark:checked:bg-blue-500 dark:checked:border-blue-500 dark:focus:ring-offset-gray-800" id="difAddress" x-on:click="open = ! open" wire:model="dif_address">
+                    <label for="difAddress" class="text-sm text-gray-500 ms-3 dark:text-neutral-400">Szállítás eltérő címre</label>
                 </div>
 
                 <div class="grid grid-cols-2 gap-4 mt-4" x-show="open">
                     <div>
                         <label for="input-label" class="block text-sm font-medium mb-2 dark:text-white">Ország</label>
-                        <select class="py-3 px-4 pe-9 block w-full border bg-gray-100 border-transparent rounded-lg text-sm focus:border-blue-500 focus:ring-blue-500 disabled:opacity-50 disabled:pointer-events-none dark:bg-neutral-700 dark:border-transparent dark:text-neutral-400 dark:focus:ring-neutral-600" wire:model="shipping_country">
+                        <select class="py-3 px-4 pe-9 block w-full border border-gray-200 rounded-lg text-sm focus:border-blue-500 focus:ring-blue-500 disabled:opacity-50 disabled:pointer-events-none dark:bg-neutral-700 dark:border-transparent dark:text-neutral-400 dark:focus:ring-neutral-600" wire:model="shipping_country">
                             <option value="Magyarország" selected>Magyarország</option>
                         </select>
                     </div>
@@ -147,7 +147,10 @@
                 </div>
             </fieldset>
 
-            <button type="submit" class="w-full bg-green-500 text-white hover:bg-green-700 py-4 px-2 mt-10 rounded-xl">Rendelés elküldése</button>
+            <button type="submit" class="w-full bg-green-500 text-white hover:bg-green-700 py-4 px-2 mt-10 rounded-xl">
+                <span wire:loading.remove wire:target="placeOrder"> Rendelés elküldése</span>
+                <span wire:loading wire:target="placeOrder">Küldés...</span>
+            </button>
         </form>
 
         <div class="bg-white p-6 rounded-lg">

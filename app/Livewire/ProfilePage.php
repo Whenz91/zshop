@@ -4,10 +4,12 @@ namespace App\Livewire;
 
 use App\Models\User;
 use App\Models\Address;
+use Illuminate\Support\Facades\Auth;
 use Livewire\Component;
 use Livewire\Attributes\On;
 use Livewire\Attributes\Title;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
 
 #[Title('Profil - Zolárium')]
 class ProfilePage extends Component
@@ -18,10 +20,7 @@ class ProfilePage extends Component
     public $email;
     public $password;
     public $new_password;
-    public $password_confirmation;
-
-    public $billing_address = [];
-    public $shipping_addresses = [];
+    public $new_password_confirmation;
    
 
     public function mount() {
@@ -29,9 +28,6 @@ class ProfilePage extends Component
         $this->user_id = $user->id;
         $this->name = $user->name;
         $this->email = $user->email;
-
-        $this->billing_address = Address::where('user_id', $this->user_id)->where('type', 'billing')->first();
-        $this->shipping_addresses = Address::where('user_id', $this->user_id)->where('type', 'shipping')->get();
 
     }
 
@@ -48,40 +44,39 @@ class ProfilePage extends Component
         $user->save();
     }
 
-    public function updateAddress() {
+    public function updatePassword() {
         $this->validate([
-            'billing_country' => 'required',
-            'billing_state' => 'required',
-            'billing_zipcode' => 'required',
-            'billing_city' => 'required',
-            'billing_street' => 'required'
+            'password' => 'required',
+            'new_password' => 'required|min:6|max:255|confirmed'
         ]);
 
-        $billing_address = Address::create([
-            'user_id' => $this->user_id,
-            'type' => 'billing',
-            'country' => $this->billing_country,
-            'state' => $this->billing_state,
-            'zipcode' => $this->billing_zipcode,
-            'city' => $this->billing_city,
-            'street' => $this->billing_street
-        ]);
+        $user = User::find($this->user_id);
 
-        if($this->difShipping == 'dif') {
-            $shipping_address = Address::create([
-                'user_id' => $this->user_id,
-                'type' => 'shipping',
-                'country' => $this->shipping_country,
-                'state' => $this->shipping_state,
-                'zipcode' => $this->shipping_zipcode,
-                'city' => $this->shipping_city,
-                'street' => $this->shipping_street
-            ]);
+        if(!Hash::check($this->password, $user->password)) {
+            $this->addError('password', 'Helytelen jelszót adtál meg.');
+            return;
         }
+
+        $user->password = Hash::make($this->new_password);
+        $user->save();
+
+        $this->password = '';
+        $this->new_password = '';
+        $this->new_password_confirmation = '';
+
+        $this->dispatch('show-toast', 'A jelszó sikeresen megváltoztatva!');
     }
 
+    public function deleteAddress($id) {
+        Address::destroy($id);
+    }
+
+    
     public function render()
     {
-        return view('livewire.profile-page');
+        return view('livewire.profile-page', [
+            'billing_address' => Address::where('user_id', $this->user_id)->where('type', 'billing')->first(),
+            'shipping_addresses' => Address::where('user_id', $this->user_id)->where('type', 'shipping')->get()
+        ]);
     }
 }
